@@ -10,6 +10,8 @@ async function connectDB() {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
+    // connect to results collection
+    // const coll = await moongoese.connection.db.collection("results");
     console.log("Connected to MongoDB");
   } catch (err) {
     console.error(err);

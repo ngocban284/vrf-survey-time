@@ -1,14 +1,17 @@
 const { ethers } = require("hardhat");
 const dotenv = require("dotenv");
-dotenv.config();
 const fs = require("fs");
+const Suvery = require("../model/suverySchema");
+const { connectDB } = require("../config/connectDB");
+const mongoose = require("mongoose");
+dotenv.config();
+connectDB();
 
 let vrfAddress;
 let vftContract;
 let owner;
 let requestTimestamp;
 let responseTimestamp;
-let results = [];
 
 async function main() {
   vrfAddress = process.env.VRF_ADDRESS;
@@ -31,35 +34,26 @@ async function main() {
   await vftContract.connect(owner).requestRandomWords({ gasLimit: 1e7 });
 
   // listen for event
-  vftContract.on("RequestFulfilled", async (event) => {
+  vftContract.on("RequestFulfilled", async (requestId) => {
     responseTimestamp = await getCurrentTimestamp();
     // request id
-    let requestId = event.requestId;
+    console.log("requestId:", requestId);
     console.log("requestTimestamp", requestTimestamp);
     console.log("responseTimestamp", responseTimestamp);
+
     // add result to results object
-    results.push({
-      requestId: requestId,
-      requestTimestamp: requestTimestamp,
-      responseTimestamp: responseTimestamp,
+    await Suvery.create({
+      requestId: requestId.toString(),
+      requestTimestamp,
+      responseTimestamp,
       responseTime: responseTimestamp - requestTimestamp,
     });
 
-    // improve this
-    // write results to file
-    // try {
-    //   fs.writeFile("results.json", JSON.stringify(results), (err) => {
-    //     if (err) throw err;
-    //     console.log("The file has been saved!");
-    //   });
-    // } catch (err) {
-    //   console.error(err);
-    // }
-    // stop listener in this event
     vftContract.removeAllListeners("RequestFulfilled");
+    // disconnect mongo
+    await mongoose.disconnect();
+    console.log("mongo connection dissconnected");
   });
-
-  console.log("results", results);
 }
 
 main().catch((error) => {
