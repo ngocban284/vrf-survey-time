@@ -1,16 +1,16 @@
 const fs = require("fs");
+const mongoose = require("mongoose");
+const Suvery = require("../model/suverySchema");
+const { connectDB } = require("../config/connectDB");
+connectDB();
 
-let content = [];
-
-// add json to content
-content.push({ a: 1, b: 2 });
-
-try {
-  fs.writeFile("results.json", JSON.stringify(content), (err) => {
-    if (err) throw err;
-    console.log("The file has been saved!");
-  });
-  // file written successfully
-} catch (err) {
-  console.error(err);
+// get all results
+async function getResults() {
+  try {
+    const results = await Suvery.find({});
+    console.log("Results Fetch Successfully");
+    return results;
+  } catch (err) {
+    console.error(err);
+  }
 }

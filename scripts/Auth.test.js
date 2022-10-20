@@ -39,25 +39,27 @@ async function main() {
     console.log("responseTimestamp", responseTimestamp);
     // add result to results object
     results.push({
-      requestId: {
-        requestTimestamp,
-        responseTimestamp,
-        responseTime: responseTimestamp - requestTimestamp,
-      },
+      requestId: requestId,
+      requestTimestamp: requestTimestamp,
+      responseTimestamp: responseTimestamp,
+      responseTime: responseTimestamp - requestTimestamp,
     });
 
+    // improve this
     // write results to file
-    try {
-      fs.writeFile("results.json", JSON.stringify(results), (err) => {
-        if (err) throw err;
-        console.log("The file has been saved!");
-      });
-    } catch (err) {
-      console.error(err);
-    }
+    // try {
+    //   fs.writeFile("results.json", JSON.stringify(results), (err) => {
+    //     if (err) throw err;
+    //     console.log("The file has been saved!");
+    //   });
+    // } catch (err) {
+    //   console.error(err);
+    // }
     // stop listener in this event
     vftContract.removeAllListeners("RequestFulfilled");
   });
+
+  console.log("results", results);
 }
 
 main().catch((error) => {
