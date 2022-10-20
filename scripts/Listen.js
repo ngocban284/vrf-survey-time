@@ -4,6 +4,7 @@ const fs = require("fs");
 const Suvery = require("../model/suverySchema");
 const { connectDB } = require("../config/connectDB");
 const mongoose = require("mongoose");
+const { where } = require("../model/suverySchema");
 dotenv.config();
 connectDB();
 
@@ -24,25 +25,17 @@ async function main() {
     vrfAddress
   );
 
-  let count = 3;
-
   // listen for event
   vftContract.on("RequestFulfilled", async (requestId) => {
     responseTimestamp = await getCurrentTimestamp();
-
-    // update to database
+    console.log("requestId:", requestId);
+    // update to database where requestId = requestId
     await Suvery.findOneAndUpdate(
       { requestId: requestId.toString() },
-      { responseTimestamp, responseTime: responseTimestamp - requestTimestamp }
+      {
+        responseTimestamp: responseTimestamp,
+      }
     );
-
-    count--;
-    if (count == 0) {
-      vftContract.removeAllListeners("RequestFulfilled");
-      // disconnect mongo
-      await mongoose.disconnect();
-      console.log("mongo connection dissconnected");
-    }
   });
 }
 
@@ -50,9 +43,6 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
-// disconnect db
-mongoose.disconnect();
 
 async function getCurrentTimestamp() {
   return (

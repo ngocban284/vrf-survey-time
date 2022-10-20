@@ -24,13 +24,16 @@ async function main() {
     vrfAddress
   );
 
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < transactionCount; i++) {
     // requestRandomWords
     requestTimestamp = await getCurrentTimestamp();
     await vftContract.connect(owner).requestRandomWords({ gasLimit: 1e7 });
 
-    let lastRequestId = await vftContract.lastRequestId();
+    // wait 15s
+    await new Promise((resolve) => setTimeout(resolve, 15000));
 
+    let lastRequestId = await vftContract.lastRequestId();
+    console.log("lastRequestId", lastRequestId.toString());
     // insert to database
     await Suvery.create({
       requestId: lastRequestId.toString(),
