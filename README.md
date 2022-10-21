@@ -42,7 +42,7 @@ Get data from mongodb for scatterplot analyst
 1. Clone the repo
 
 ```sh
-    git clone https://github.com/ngocban284/Image-Lazer-Backend.git
+    https://github.com/ngocban284/vrf-survey-time.git
 ```
 
 2. Install NPM packages
